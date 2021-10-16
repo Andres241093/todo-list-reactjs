@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 
 class List extends Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            newName: ''
+        }
+    }
     render(){
         return(
             <div>
@@ -30,14 +36,37 @@ class List extends Component {
                             <input onChange={()=>this.props.onCheckItem(item.id)} type="checkbox" />
                         </td>
                         <td>{item.id}</td>
-                        <td>{item.name}</td>
+                        <td>{
+                            item.changeName ? 
+                            <input placeholder={item.name} onChange={this.changeName.bind(this)} type="text" /> :
+                            item.name
+                        }</td>
                         <td>{item.status ? 'done' : 'pending'}</td>
                         <td>
-                            <button onClick={()=>this.props.onUpdateItem(item.id)}>update</button>
+                            <button onClick={()=>this.onUpdateItem(item)}>update</button>
                             <button onClick={()=>this.props.onDeleteItem(item.id)}>x</button>
                         </td>
                     </tr>
         );
+    }
+
+    onUpdateItem(item){
+        console.log(item)
+        if(this.state.newName){
+            this.props.onUpdateItem(item.id,this.state.newName);
+        }else{
+            this.props.onUpdateItem(item.id,item.name);
+        }
+        this.setState({
+            newName: ''
+        });
+    }
+
+    changeName(e){
+        e.preventDefault();
+        this.setState({
+            newName: e.target.value
+        });
     }
 }
 export default List;

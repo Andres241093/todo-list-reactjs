@@ -9,27 +9,23 @@ class TodoList extends Component {
                 {
                     id: 0,
                     name: '',
-                    status: false
+                    status: false,
+                    changeName: false
                 }
             ],
             collector: ''
         }
-        this.onChange = this.onChange.bind(this);
-        this.onAddItem = this.onAddItem.bind(this);
-        this.onDeleteItem = this.onDeleteItem.bind(this);
-        this.onUpdateItem = this.onUpdateItem.bind(this);
-        this.onCheckItem = this.onCheckItem.bind(this);
     }
     render(){
         return(
             <div>
-                <input value={this.state.collector} onChange={this.onChange} type="text" />
-                <button onClick={this.onAddItem}>add +</button>
+                <input value={this.state.collector} onChange={this.onChange.bind(this)} type="text" />
+                <button onClick={this.onAddItem.bind(this)}>add +</button>
 
                 <List 
-                    onCheckItem={this.onCheckItem} 
-                    onUpdateItem={this.onUpdateItem} 
-                    onDeleteItem={this.onDeleteItem} 
+                    onCheckItem={this.onCheckItem.bind(this)} 
+                    onUpdateItem={this.onUpdateItem.bind(this)} 
+                    onDeleteItem={this.onDeleteItem.bind(this)} 
                     items={this.state.items}
                 />
             </div>
@@ -51,7 +47,8 @@ class TodoList extends Component {
             tempArray.push({
                 id: lastId,
                 name: this.state.collector,
-                status: false
+                status: false,
+                changeName: false
             });
         }
         this.setState({
@@ -62,24 +59,29 @@ class TodoList extends Component {
 
     onDeleteItem(itemId){
         const tempArray = this.state.items;
-        const indexToDelete = tempArray.indexOf(
-            tempArray.filter((item)=>item.id === itemId)
-        );
+        const indexToDelete = this.searchIem(itemId);
         tempArray.splice(indexToDelete,1);
         this.setState({
             items: tempArray
         });
     }
-
-    onUpdateItem(itemId){
-        console.log(itemId)
+    
+    onUpdateItem(itemId,newName){
+        const tempArray = this.state.items;
+        const indexToChange = this.searchIem(itemId);
+        tempArray.splice(indexToChange,1,{
+            ...tempArray[indexToChange], 
+            changeName: !tempArray[indexToChange].changeName,
+            name: newName
+        });
+        this.setState({
+            items: tempArray
+        });
     }
 
     onCheckItem(itemId){
         const tempArray = this.state.items;
-        const indexToChange = tempArray.indexOf(
-            tempArray.find((item)=>item.id === itemId)
-        );
+        const indexToChange = this.searchIem(itemId);
         tempArray.splice(indexToChange,1,{
             ...tempArray[indexToChange], 
             status: !tempArray[indexToChange].status
@@ -87,6 +89,12 @@ class TodoList extends Component {
         this.setState({
             items: tempArray
         })
+    }
+
+    searchIem(itemId){
+        return this.state.items.indexOf(
+            this.state.items.find((item)=>item.id === itemId)
+        );
     }
 }
 export default TodoList;
